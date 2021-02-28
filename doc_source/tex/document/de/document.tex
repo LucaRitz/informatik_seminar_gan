@@ -1,0 +1,24 @@
+\input{../common/command_definition}
+\setup{ngerman}{german=swiss}
+
+% glossary
+\input{./resources/glossary}
+\addbibresource{../common/resources/literature.bib}
+
+\begin{document}
+
+    \include{title_page}
+    \newpage
+    \tableofcontents
+
+    \include{01_introduction/00_document}
+    \include{02_main/00_document}
+    \include{03_conclusion/00_document}
+    \include{04_appendix/00_document}
+
+    \newpage
+    \listoffigures
+    \printbibliography[heading=bibintoc]
+    \printunsrtglossary[style={index}]
+
+\end{document}

@@ -1,4 +1,4 @@
-\newcommand{\setup}[1]{
+\newcommand{\setup}[2]{
 %----------------------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
@@ -79,6 +79,10 @@
 
     \usepackage{a4wide}
     \usepackage[#1]{babel}
+    \usepackage[#2]{csquotes}
+    \newcommand*{\itenquote}[1]{\enquote{{\itshape##1}}}
+    \newcommand{\para}{\\[12pt]}
+    \usepackage{subcaption}
     \usepackage[local,nolabels,exerciseaslist,usesolutionserieslabels]{exsol}
     \renewcommand{\loadSolutions}{
         \immediate\closeout\solutionstream
