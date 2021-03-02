@@ -67,49 +67,92 @@ Dadurch wird also über diese Minimierung erzielt, dass $G$ möglichst Daten gen
 Die Autoren verweisen hier auf die Tatsache, dass die beiden neuronalen Netze $D$ und $G$ ein
 Zwei-Spieler minimax-Spiel mit der folgenden Value-Funktion $V(G,D)$ spielen \cite[p.~2]{8253599}:
 \begin{align}
-    \min_{G} \max_{D} V(D, G) = E_{x\sim p_{data}(x)}[\log D(x)] + E_{z\sim p_z(z)}[\log(1 - D(G(z)))]
+    \min_{G} \max_{D} V(D, G) = E_{x\sim p_{data}(x)}[\log D(x)] + E_{z\sim p_z(z)}[\log(1 - D(G(z)))] \label{eq:1}
 \end{align}
-Diese Value-Funktion definiert die Fehlerfunktion von $D$. Nachfolgend werden einige Gedanken des Autors dazu aufgeführt.\\
+Diese Value-Funktion definiert die umgekehrte Fehlerfunktion von $D$. Nachfolgend werden einige Gedanken des Autors dazu aufgeführt.\\
 \textbf{Fall 1 - Discriminator macht alles richtig}:
 \begin{align}
     D(x) = 1, D(G(z)) = 0 \Rightarrow \log(1) + \log(1 - 0) = \log(1) + \log(1) = 0
 \end{align}
-\textbf{Fall 2 - Discriminator weist $G(z)$ dem Datenset zu}:
-\begin{align}
-    D(x) = 1, D(G(z)) = 1 \Rightarrow \log(1) + \log(1 - 1) = \log(1) + \log(0) = -\infty
-\end{align}
-\textbf{Fall 3 - Discriminator kann nicht mehr unterscheiden}:\\
+\textbf{Fall 2 - Discriminator kann nicht mehr unterscheiden}:\\
 \begin{align}
     D(x) = \frac{1}{2}, D(G(z)) = \frac{1}{2} \Rightarrow \log(\frac{1}{2}) + \log(1 - \frac{1}{2}) = \log(\frac{1}{2}) + \log(\frac{1}{2}) = -\log(4) = -1.3862
 \end{align}
-Nach den Autoren bildet der Fall 3 das globale Minimum, welches eben nur erzielt werden kann, wenn der Discriminator nicht mehr zwischen
+Nach den Autoren bildet der Fall 2 das globale Minimum, welches eben nur erzielt werden kann, wenn der Discriminator nicht mehr zwischen
 den beiden Datensets unterscheiden kann \cite[p.~4-5]{8253599}. Es gilt: $p_{data} = p_{g}$
 \para
 Nun stellt sich noch die Frage, wie denn genau $G$ lernt. Nach \glqq Computerphile\grqq{} erhält $G$ Informationen von $D$.
-$G$ kennt also die Schwächen von $D$ und kann diese besser ausnützen. Dies geschieht über die Gradienten von $D$. \cite{youtube:gan}
-\\TODO: Mapping besser von Noise z nach x darstellen
+$G$ kennt also die Schwächen von $D$ und kann diese besser ausnützen \cite{youtube:gan}. Um dies besser zu verstehen,
+wurde ein Artikel hinzugezogen, welcher sich einem Beispiel in Tensorflow widmet \cite{tensorflow:1:gan}. Dort
+wird eine Loss-Funktion sowohl für den Generator, wie auch den Discriminator angegeben. Die Loss-Funktionen werden im
+nachfolgenden einzeln besprochen. Zuerst wird sich dem Generator gewidmet.
+\begin{lstlisting}
+    def generator_loss(fake_output):
+        return cross_entropy(tf.ones_like(fake_output), fake_output)
+\end{lstlisting}
+Die Loss-Funktion nach \cite{tensorflow:1:gan} für den Generator besteht also im Wesentlichen aus einer Kreuzentropie\footnote{Beschreibung in
+Anhang \ref{anhang:kreuzentropie}} zwischen der Wahrscheinlichkeit des Diskriminators für die generierten Samples
+sowie der Wahrheit (alle Wahrscheinlichkeiten sind 1). Dies bedeutet, der Fehler für den Generator ist $0$, wenn der Diskriminator
+alle generierten Samples als Sample aus dem originalen Datenset anerkennt.\\
+Für den Diskriminator ist die Sache ein wenig komplizierter \cite{tensorflow:1:gan}.
+\begin{lstlisting}
+    def discriminator_loss(real_output, fake_output):
+        real_loss = cross_entropy(tf.ones_like(real_output), real_output)
+        fake_loss = cross_entropy(tf.zeros_like(fake_output), fake_output)
+        total_loss = real_loss + fake_loss
+        return total_loss
+\end{lstlisting}
+An dieser Stelle werden die einzelnen Zeilen der Gleichung \ref{eq:1} zugewiesen. Dazu muss bekannt sein, dass der
+Diskriminator ein binäres Problem beschreibt. Weiterhin ist die Gleichung \ref{eq:1} der Kreuzentropie entnommen. Diese
+kann für einen binären Klassifizierer wie in Formel \ref{eq:7} geschrieben werden \cite{stackoverflow:1:crossEntropy}.
+\begin{align}
+    H(P,Q) = - \sum_{x \in X} (P(x) \cdot log(Q(x)) + (1 - P(x)) \cdot log(1 - Q(x))) \label{eq:7}
+\end{align}
+Die erste Zeile berechnet die Kreuzentropie zwischen den berechneten Wahrscheinlichkeiten der originalen Samples
+sowie der erwarteten Wahrscheinlichkeiten. Für den Diskriminator entspricht $P(x) = 1$ für alle Wahrscheinlichkeiten,
+wobei $Q(x) = D(x)$ gilt und $x$ aus $p_{data}$ stammt. Eingesetzt in Formel \ref{eq:7} ergibt dies \ref{eq:8}
+\begin{align}
+    H(P,Q) = - \sum_{x \in p_{data}} (P(x) \cdot log(D(x)) + (1 - P(x)) \cdot log(1 - D(x))) \label{eq:8}\\
+    H(P,Q) = - \sum_{x \in p_{data}} log(D(x)) \label{eq:11}
+\end{align}
+Die darauffolgende Zeile entspricht dem zweiten Summand der Gleichung\ref{eq:1}.
+In diesem Fall ist $P(x) = 0$ für alle erwarteten Wahrscheinlichkeiten (das generierte Sample gehört nicht zum
+originalen Datenset), $Q(x) = D(x)$ und $x$ stammt aus $p_{g}$.
+\begin{align}
+    H(P,Q) = - \sum_{x \in p_{g}} (P(x) \cdot log(D(x)) + (1 - P(x)) \cdot log(1 - D(x)))\\
+    H(P,Q) = - \sum_{x \in p_{g}} log(1 - D(x)) \label{eq:9}
+\end{align}
+Wenn nun in Betracht gezogen wird, dass $x$ nicht aus $p_g$ stammt, sondern aus den Noise-Samples $p_z$ und $x = z$ gilt,
+dann kann die Formel \ref{eq:9} so umgeschrieben werden, dass sie mit der Formel \ref{eq:1} korreliert.
+\begin{align}
+    x(z) = G(z)
+    H(P,Q) = - \sum_{z \in p_{z}} log(1 - D(G(z))) \label{eq:10}
+\end{align}
+Zusammenaddiert ergeben die Formeln \ref{eq:11} und \ref{eq:10} fast den Loss-Wert der Formel \ref{eq:1} und damit die Minimax-Value-Funktion,
+welche nach den Formeln \ref{eq:11} und \ref{eq:10} eigentlich von $D$ minimiert werden will.
+\begin{align}
+    V(D,G) = - \sum_{x \in p_{data}} log(D(x)) + - \sum_{z \in p_{z}} log(1 - D(G(z)))
+\end{align}
+Da die negativen Vorzeichen jeweils weggelassen werden, wird die Richtung der Optimierung umgedreht,
+was auch erklärt, wieso die Loss-Funktion nach $G$ und nicht mehr nach $D$ minimiert wird.
+TODO: Fehlt ein arithmetisches Mittel, Median? Was ist $E$?
+
 \newpage
 \subsection{Einschub - Minimax}
 Um zu verstehen, wieso es sich hierbei um einen solchen Minimax-Algorithmus handelt, wird in diesem Abschnitt ebendieser mit
-Verweis auf die Gleichung 1 eingeführt. Der Algorithmus geht auf den Versuch zurück, für ein Zwei-Spieler-Spiel eine
+Verweis auf die Gleichung \ref{eq:1} eingeführt. Der Algorithmus geht auf den Versuch zurück, für ein Zwei-Spieler-Spiel eine
 schlaue KI zu erschaffen, die möglichst weit in die Zukunft sehen und abschätzen kann, was der Gegener tun wird.
 Dabei geht man davon aus, dass der Gegner immer so agiert, damit er seine Gewinnwahrscheinlichkeit maximiert und die
 der KI minimiert.\cite{towardsdatascience:minimax} Die Züge, welche gemacht werden können, werden über einen sogenannten
-Game-Tree dargestellt. In Abbildung 2.1 ist der Game-Tree für ein \Gls{GAN} gegeben. Jeder Layer stellt einen Zug in diesem
-\begin{figure}[h!]
-    \begin{center}
-        \includegraphics[width=0.5\textwidth]{../common/02_main/resources/03_gan_game_tree.png}
-    \end{center}
-    \caption{Leerer GAN-Game-Tree}
-    \label{fig:Leerer GAN-Game-Tree}
-\end{figure}
-Spiel dar. Innerhalb eines Zuges gibt es viele Möglichkeiten. Jede dieser Möglichkeiten wird über einen Node dargestellt.
-Für ein \Gls{GAN} sind dies alle möglichen Zustände der Variablen, des neuronalen Netzwerks. Der Branching-Faktor ist also
-sehr gross. In der Gleichung 1 geht es um die Maximierung für $D$, weswegen die grünen Layer zu $D$ gehören. In diesen Zügen
+Game-Tree dargestellt. Dieser ist in Abbildung \ref{fig:Berechneter GAN-Game-Tree} ersichtlich,
+es ist der Game-Tree für ein \Gls{GAN} gegeben. Jeder Layer stellt einen Zug in diesem Spiel dar.
+Innerhalb eines Zuges gibt es viele Möglichkeiten. Jede dieser Möglichkeiten wird über einen Node dargestellt.
+Für ein \Gls{GAN} sind dies alle möglichen Zustände der Variablen des neuronalen Netzwerks. Der Branching-Faktor ist also
+sehr gross. In der Gleichung \ref{eq:1} geht es um die Maximierung für $D$, weswegen die grünen Layer zu $D$ gehören. In diesen Zügen
 soll der Algorithmus die Value-Funktion $V(G,D)$ für einen Node aus seinen Nachfolgern maximal wählen. Hingegen soll $G$ minimiert werden, weswegen
 die roten Layer zu $G$ gehören. Innerhalb dieser Layer wird der minimale Wert der nachfolge States bevorzugt. Ist eine gewisse
 Tiefe erreicht worden, oder es gibt keine Nachfolge-States mehr, dann wird die Value-Funktion $V(G,D)$ für diese States aufgerufen und für den
-jeweiligen Status der Wert berechnet. Abbildung 2.2 zeigt einen möglichen ausgefüllten Game-Tree über drei Stufen hinweg.
+jeweiligen Status der Wert berechnet. Abbildung \ref{fig:Berechneter GAN-Game-Tree} zeigt einen möglichen ausgefüllten Game-Tree über drei Stufen hinweg.
 \begin{figure}[h!]
     \begin{center}
         \includegraphics[width=0.5\textwidth]{../common/02_main/resources/04_gan_game_tree_filled.png}

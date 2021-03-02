@@ -1,2 +1,54 @@
 \chapter{Anhang}
-Diese Kapitel fällt wahrscheinlich weg.
+\section{Loss-Function - Kreuzentropie}\label{anhang:kreuzentropie}
+Diese Kreuzentropie lässt sich wie folgt beschreiben: \itenquote{Cross-entropy is a measure of the difference between two
+probability distributions for a given random variable or set of events} \cite{machinelearningmastery:1:crossEntropy}.
+Es ist also ein Mass, um die Differenz zwischen zwei Wahrscheinlichkeitsverteilungen einer Zufallsvariable oder einer
+Menge von Ereignissen zu beschreiben. Um dies zu verstehen, wird zuerst die Entropie betrachtet. Diese beschreibt in der
+Informatik die Anzahl Bits, welche benötigt werden, um ein zufällig gewähltes Element aus einer Wahrscheinlichkeitsverteilung
+zu übertragen \cite{machinelearningmastery:1:crossEntropy}. Die Entropie kann weiterhin berechnet werden, wenn eine Menge
+an Ereignissen $x$ in $X$ sowie deren Wahrscheinlichkeit $P(x)$ bekannt sind. Dies ist aus der Gleichung \ref{eq:2} zu entnehmen.
+\begin{align}
+    H(P) = - \sum_{x \in X} P(x) \cdot log(P(x)) \label{eq:2}
+\end{align}
+Die Kreuzentropie baut nun auf dieser Definition auf. Sie beschreibt die Anzahl Bits, welche benötigt werden, um ein
+durchschnittliches Ereignis einer Wahrscheinlichkeitsverteilung im Vergleich zu einer anderen darzustellen \cite{machinelearningmastery:1:crossEntropy}.
+Nun kann ein Ereignis $x$ in zwei Wahrscheinlichkeitsräumen vorkommen. Einerseits in $P$, andererseits in $Q$. Weiterhin
+müssen die Wahrscheinlichkeiten der Ereignisse $P(x)$ und $Q(x)$ innerhalb dieser Verteilungen bekannt sein. Dadurch ergibt
+sich die Gleichung \ref{eq:3}.
+\begin{align}
+    H(P,Q) = - \sum_{x \in X} P(x) \cdot log(Q(x)) \label{eq:3}
+\end{align}
+Wie genau ist dies nun im Kontext von Machine Learning zu verstehen? Grundsätzlich geht es darum eine Klassifikation vorzunehmen.
+Dabei kennt man für ein Sample die Wahrheit. Diese Wahrheit zeigt sich in der Form der Wahrscheinlichkeitsangabe für eine Klasse.
+Wenn es sich also z.B. um ein KNN handelt und dieses trainiert wird, um drei Klassen (Apfe, Birne, Zitrone) zu unterscheiden und
+ein Sample \glqq Birne\grqq{} propagiert wird, dann ist die korrekte Wahrscheinlichkeitsverteilung $P$ (0, 1, 0), wohingegen
+das KNN für dieses Sample ein anderes Resultat liefert, nämlich $Q$ (0.2, 0.7, 0.1). Nun kann für das Ereignis \glqq Birne\grqq{} die
+Kreuzentropie über beide Wahrscheinlichkeitsverteilungen berechnet werden, um den Unterschied derer zu bestimmen.
+Konkret bedeutet das für das aktuelle Beispiel:
+\begin{align}
+    H(P,Q) = - (P(Apfel) \cdot log(Q(Apfel)) + P(Birne) \cdot log(Q(Birne)) + P(Zitrone) \cdot log(Q(Zitrone)))\\
+    H(P,Q) = - (0 \cdot log(0.2) + 1 \cdot log(0.7) + P(0) \cdot log(0.1))\\
+    H(P,Q) = - (1 \cdot log(0.7))\\
+    H(P,Q) = - (-0.514573)\\
+    H(P,Q) = 0.514573
+\end{align}
+Die Frage stellt sich nun, wieso diese Kreuzentropie sich so gut als Loss-Funktion eignet. Dazu muss bedacht werden, dass die
+Entropie für eine Wahrscheinlichkeitsverteilung wie im Falle von $P$ des vorherigen Beispiels immer $0$ beträgt. Dies kann
+sehr einfach anhand der Entropie gezeigt werden. Man nehme bei die Wahrscheinlichkeitsverteilung $P$ für die Ereignisse $x_1 \cdots x_n$ die
+folgenden Wahrscheinlichkeiten an: $(p_1, \cdots p_k \cdots p_n)$ wobei $p_k = 1$ und $p_{k \neq p} = 0$ gilt.
+Dadurch ergibt sich für die Entropie folgenden Formel:
+\begin{align}
+    H(P,Q) = - (\sum_{i = 0}^{k - 1}(P(x_i) \cdot log(P(x_i))) + P(x_k) \cdot log(P(x_k)) + \sum_{i = k+1}^{n}(P(x_i) \cdot log(P(x_i)))) \label{eq:4}
+\end{align}
+Aus der Formel \ref{eq:4} ist ersichtlich, dass die erste wie auch die letzte Summe auf $0$ evaluieren, da die Wahrscheinlichkeit des Ereignisses $x_i$
+jeweils $0$ ist. Einzig das Ereignis $x_k$ ist $1$, daher kann die Formel wie in \ref{eq:5} gekürzt werden.
+\begin{align}
+    H(P) = - (P(x_k) \cdot log(P(x_k))) \label{eq:5}\\
+    H(P) = - (1 \cdot log(1))\\
+    H(P) = - (1 \cdot 0)\\
+    H(P) = 0
+\end{align}
+Nun gilt es noch zu beachten, dass die Kreuzentropie der Entropie entspricht, wenn es sich um dieselbe
+Wahrscheinlichkeitsverteilung handelt. Dadurch wird klar, dass wenn ein Machine-Learning Algorithmus
+ein Resultat einer Klassifikation berechnet, welches exakt mit der Wahrheit übereinstimmt, dies $0$ ergibt.
+Das Sample wurde korrekt klassifiziert.\cite{machinelearningmastery:1:crossEntropy}.
