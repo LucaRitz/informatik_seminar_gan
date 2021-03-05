@@ -69,7 +69,7 @@ Zwei-Spieler minimax-Spiel mit der folgenden Value-Funktion $V(G,D)$ spielen \ci
 \begin{align}
     \min_{G} \max_{D} V(D, G) = E_{x\sim p_{data}(x)}[\log D(x)] + E_{z\sim p_z(z)}[\log(1 - D(G(z)))] \label{eq:1}
 \end{align}
-Diese Value-Funktion definiert die umgekehrte Fehlerfunktion von $D$. Nachfolgend werden einige Gedanken des Autors dazu aufgeführt.\\
+Nachfolgend werden einige Gedanken des Autors dazu aufgeführt.\\
 \textbf{Fall 1 - Discriminator macht alles richtig}:
 \begin{align}
     D(x) = 1, D(G(z)) = 0 \Rightarrow \log(1) + \log(1 - 0) = \log(1) + \log(1) = 0
@@ -80,19 +80,22 @@ Diese Value-Funktion definiert die umgekehrte Fehlerfunktion von $D$. Nachfolgen
 \end{align}
 Nach den Autoren bildet der Fall 2 das globale Minimum, welches eben nur erzielt werden kann, wenn der Discriminator nicht mehr zwischen
 den beiden Datensets unterscheiden kann \cite[p.~4-5]{8253599}. Es gilt: $p_{data} = p_{g}$
+Was genau diese sogenannte Value-Funktion $V(G,D)$ darstellt und wie sie hergeleitet wurde, wird im nächsten Abschnitt
+genauer erläutert.
 \para
-Nun stellt sich noch die Frage, wie denn genau $G$ lernt. Nach \glqq Computerphile\grqq{} erhält $G$ Informationen von $D$.
+Nun stellt sich also noch die Frage, wie denn genau $G$ lernt. Nach \glqq Computerphile\grqq{} erhält $G$ Informationen von $D$.
 $G$ kennt also die Schwächen von $D$ und kann diese besser ausnützen \cite{youtube:gan}. Um dies besser zu verstehen,
 wurde ein Artikel hinzugezogen, welcher sich einem Beispiel in Tensorflow widmet \cite{tensorflow:1:gan}. Dort
-wird eine Loss-Funktion sowohl für den Generator, wie auch den Discriminator angegeben. Die Loss-Funktionen werden im
-nachfolgenden einzeln besprochen. Zuerst wird sich dem Generator gewidmet.
+wird eine Loss-Funktion\footnote{Die Loss-Function bildet die Bewertung eines neuronalen Netzes. Sie gleicht eine Menge von Wahrscheinlichkeiten eines
+Ereignisses mit einer anderen ab und soll $0$ ergeben, wenn die Mengen identisch sind.\cite{wiki:lossFunction}}
+sowohl für den Generator, wie auch den Discriminator angegeben. Die Loss-Funktionen werden im nachfolgenden einzeln besprochen. Zuerst wird sich dem Generator gewidmet.
 \begin{lstlisting}
     def generator_loss(fake_output):
         return cross_entropy(tf.ones_like(fake_output), fake_output)
 \end{lstlisting}
 Die Loss-Funktion nach \cite{tensorflow:1:gan} für den Generator besteht also im Wesentlichen aus einer Kreuzentropie\footnote{Beschreibung in
 Anhang \ref{anhang:kreuzentropie}} zwischen der Wahrscheinlichkeit des Diskriminators für die generierten Samples
-sowie der Wahrheit (alle Wahrscheinlichkeiten sind 1). Dies bedeutet, der Fehler für den Generator ist $0$, wenn der Diskriminator
+sowie der Wahrheit (alle Wahrscheinlichkeiten sind in dem Fall $1$). Dies bedeutet, der Fehler für den Generator ist $0$, wenn der Diskriminator
 alle generierten Samples als Sample aus dem originalen Datenset anerkennt.\\
 Für den Diskriminator ist die Sache ein wenig komplizierter \cite{tensorflow:1:gan}.
 \begin{lstlisting}
@@ -102,20 +105,20 @@ Für den Diskriminator ist die Sache ein wenig komplizierter \cite{tensorflow:1:
         total_loss = real_loss + fake_loss
         return total_loss
 \end{lstlisting}
-An dieser Stelle werden die einzelnen Zeilen der Gleichung \ref{eq:1} zugewiesen. Dazu muss bekannt sein, dass der
-Diskriminator ein binäres Problem beschreibt. Weiterhin ist die Gleichung \ref{eq:1} der Kreuzentropie entnommen. Diese
+An dieser Stelle werden nun die einzelnen Zeilen der Gleichung \ref{eq:1} zugewiesen. Dazu muss bekannt sein, dass der
+Diskriminator ein binäres Problem beschreibt. Weiterhin scheint die Gleichung \ref{eq:1} der Kreuzentropie entnommen zu sein. Diese
 kann für einen binären Klassifizierer wie in Formel \ref{eq:7} geschrieben werden \cite{stackoverflow:1:crossEntropy}.
 \begin{align}
     H(P,Q) = - \sum_{x \in X} (P(x) \cdot log(Q(x)) + (1 - P(x)) \cdot log(1 - Q(x))) \label{eq:7}
 \end{align}
-Die erste Zeile berechnet die Kreuzentropie zwischen den berechneten Wahrscheinlichkeiten der originalen Samples
-sowie der erwarteten Wahrscheinlichkeiten. Für den Diskriminator entspricht $P(x) = 1$ für alle Wahrscheinlichkeiten,
-wobei $Q(x) = D(x)$ gilt und $x$ aus $p_{data}$ stammt. Eingesetzt in Formel \ref{eq:7} ergibt dies \ref{eq:8}
+Die erste Zeile der \glqq discriminator\textunderscore loss\grqq{} Funktion berechnet die Kreuzentropie zwischen den Wahrscheinlichkeiten der originalen Samples
+sowie der erwarteten Wahrscheinlichkeiten von $D$ für die originalen Samples. Für den Diskriminator entspricht $P(x) = 1$ für alle Wahrscheinlichkeiten,
+wobei $Q(x) = D(x)$ gilt und das Sample $x$ aus $p_{data}$ stammt. Eingesetzt in Formel \ref{eq:7} ergibt dies \ref{eq:8}.
 \begin{align}
     H(P,Q) = - \sum_{x \in p_{data}} (P(x) \cdot log(D(x)) + (1 - P(x)) \cdot log(1 - D(x))) \label{eq:8}\\
     H(P,Q) = - \sum_{x \in p_{data}} log(D(x)) \label{eq:11}
 \end{align}
-Die darauffolgende Zeile entspricht dem zweiten Summand der Gleichung\ref{eq:1}.
+Die darauffolgende Zeile der Funktion \glqq discriminator\textunderscore loss\grqq{} wird dem zweiten Summand der Gleichung \ref{eq:1} zugewiesen.
 In diesem Fall ist $P(x) = 0$ für alle erwarteten Wahrscheinlichkeiten (das generierte Sample gehört nicht zum
 originalen Datenset), $Q(x) = D(x)$ und $x$ stammt aus $p_{g}$.
 \begin{align}
@@ -125,16 +128,22 @@ originalen Datenset), $Q(x) = D(x)$ und $x$ stammt aus $p_{g}$.
 Wenn nun in Betracht gezogen wird, dass $x$ nicht aus $p_g$ stammt, sondern aus den Noise-Samples $p_z$ und $x = z$ gilt,
 dann kann die Formel \ref{eq:9} so umgeschrieben werden, dass sie mit der Formel \ref{eq:1} korreliert.
 \begin{align}
-    x(z) = G(z)
+    x(z) = G(z)\\
     H(P,Q) = - \sum_{z \in p_{z}} log(1 - D(G(z))) \label{eq:10}
 \end{align}
-Zusammenaddiert ergeben die Formeln \ref{eq:11} und \ref{eq:10} fast den Loss-Wert der Formel \ref{eq:1} und damit die Minimax-Value-Funktion,
+Zusammenaddiert ergeben die Formeln \ref{eq:11} und \ref{eq:10} fast den Loss-Wert der Formel \ref{eq:1} und damit auch die Minimax-Value-Funktion,
 welche nach den Formeln \ref{eq:11} und \ref{eq:10} eigentlich von $D$ minimiert werden will.
 \begin{align}
-    V(D,G) = - \sum_{x \in p_{data}} log(D(x)) + - \sum_{z \in p_{z}} log(1 - D(G(z)))
+    \widetilde{V(D,G)} = - \sum_{x \in p_{data}} log(D(x)) - \sum_{z \in p_{z}} log(1 - D(G(z)))
 \end{align}
-Da die negativen Vorzeichen jeweils weggelassen werden, wird die Richtung der Optimierung umgedreht,
-was auch erklärt, wieso die Loss-Funktion nach $G$ und nicht mehr nach $D$ minimiert wird.
+$-1$ soll nun noch ausgeklammert werden, damit wird ersichtlicht, dass es sich allem Anschein nach um die
+umgedrehte Loss-Function von $D$ handelt.
+\begin{align}
+    \widetilde{V(D,G)} = - (\sum_{x \in p_{data}} log(D(x)) + \sum_{z \in p_{z}} log(1 - D(G(z))))\\
+    \widetilde{V(D,G)} = - V(D,G)\label{eq:12}
+\end{align}
+Formel \ref{eq:12} erklärt nun den Zusammenhang zwischen der Loss- wie auch der Value-Function aus Formel \ref{eq:1}.
+Für den Minimax-Algorithmus wird also die Richtung der Optimierung umgedreht, um nach $G$ zu minimieren.
 TODO: Fehlt ein arithmetisches Mittel, Median? Was ist $E$?
 
 \newpage
@@ -162,6 +171,40 @@ jeweiligen Status der Wert berechnet. Abbildung \ref{fig:Berechneter GAN-Game-Tr
 \end{figure}
 Der rote Pfad bildet nach aktuellem Kentnisstand der beste Weg für $D$, und wird diesen wählen unter der Annahme,
 dass $G$ wiederum den Weg wählen wird, welcher für $G$ am besten ist.
+\section{Noise zu Sample}
+Die Problematik der Bildgenerierung an sich wurde zu Beginn ein wenig angedeutet. Dies soll nun vertieft
+werden. Nach \glqq Computerphile \grqq{} lernt ein Neuronales Netz die Klassifikation auf ein Label. Das heisst, es gibt
+jeweils genau eine richtige Lösung \cite[~t 4:00]{youtube:gan}. Die Problematik besteht nun darin, dass es in diesem Fall eine
+unendliche Menge an korrekten Lösungen gibt. Es kann also eine Lösung bei einem \Gls{KNN} angefragt werden, die erhaltene
+Lösung muss dann aber mit einer Art \glqq Zufälligkeit\grqq{} verändert, respektive korrigiert werden.
+
+Wie Eingangs erwähnt, bildet $G$ ein Mapper von Noise-Samples $z$ nach Samples in $x \in p_{data}$. Weiterhin ist nach
+dem Beispiel in Tensorflow das neuronale Netz von $G$ als \Gls{CNN} definiert. Wahrscheinlich entspricht die Input-Dimension des
+Bilds der Output-Dimension \cite{tensorflow:1:gan}. Damit ist die Antwort auf die Frage bereits vornweg genommen.
+Die Frage selbst lautet, wie der Generator Bilder erzeugt. Um dies trotzdem ein wenig genauer zu erläutern wird zu Beginn
+ein neuronales Netz angenommen, das lediglich ein einzelnes Neuron in der Input-Schicht hat. Der Definitionsbereich dieses Neurons sei
+weiterhin auf $0$ und $1$ beschränkt, ist also binär. Dementsprechend kann der Generator logischerweise genau zwei Bilder
+generieren, da es sich um einen deterministischen Algorithmus handelt, welcher keinerlei Zufälligkeit zulässt.
+
+Irgendwoher muss diese Zufälligkeit dem Generator zugeführt werden. Dies geschieht nun eben bei diesem Input-Layer.
+Bei einem klassischen \Gls{KNN} kann es also nicht einfach nur ein Neuron geben. Es gibt eine ganze Menge und der Wert
+der einzelnen Inputs kann zwischen bestimmten Intervallen liegen. Weiterhin werden alle Werte zufällig bestimmt,
+was einem Rauschen gleichkommt, wie in Abbildung \ref{fig:Input-Noise} ersichtlich ist.
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.5\textwidth]{../common/02_main/resources/05_noise.png}
+    \end{center}
+    \caption{Input-Noise \cite{tensorflow:1:gan}}
+    \label{fig:Input-Noise}
+\end{figure}
+
+Was genau bedeutet nun dieses Rauschen? Nach \glqq Computerphile \grqq{} kann dieses Rauschen einem Punkt in einem
+mehrdimensionalen Raum gleichgesetzt werden \cite[~t 16:45]{youtube:gan}. Wird dieser Punkt leicht angepasst, dann
+wird der Generator daraus ein leicht anderes Sample erzeugen, das einem Sample aus dem Datenset $p_{data}$ entspricht.
+Eine Richtung in diesem mehrdimensionalen Raum kann ebenfalls bestimmten Eigenschaften zugewiesen werden. Wird der Punkt
+z.B. in nur eine Richtung verschoben, so wird ein Objekt auf dem Output-Sample leicht grösser. Eine
+Richtung in diesem Raum würde also der Grösse entsprechen \cite{~t 17:35}{youtube:gan}.
+
 \section{Resultate}
 Beschreibe einige Ergebnisse auch aus dem Abstract.
 \section{Im Vergleich - Vor- und Nachteile}
