@@ -6,7 +6,7 @@ from tensorflow.keras import layers
 
 def make_generator_model():
     model = tf.keras.Sequential()
-    model.add(layers.Dense(8*8*512, use_bias=False, input_shape=(100,)))
+    model.add(layers.Dense(8*8*512, use_bias=False, input_shape=(1000,)))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
@@ -62,7 +62,7 @@ discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
 BUFFER_SIZE = 60000
 BATCH_SIZE = 256
 EPOCHS = 100
-noise_dim = 100
+noise_dim = 1000
 num_examples_to_generate = 1
 seed = tf.random.normal([num_examples_to_generate, noise_dim])
 cmap=None
