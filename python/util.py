@@ -45,6 +45,7 @@ def build_checkpoint(gan) -> tf.train.Checkpoint:
 
 def generate(output_dir: str, gan, checkpoint_dir: str, checkpoint_prefix: str, do_train=False):
     checkpoint = build_checkpoint(gan)
+    load(checkpoint, checkpoint_dir)
 
     if do_train:
         @tf.function
@@ -77,7 +78,7 @@ def generate(output_dir: str, gan, checkpoint_dir: str, checkpoint_prefix: str, 
                     print('Train step {0} of {1} done'.format(step, len(dataset)))
 
                 # Save the model every 15 epochs
-                if (epoch + 1) % 15 == 0:
+                if (epoch + 100) % 15 == 0:
                     checkpoint.save(file_prefix=checkpoint_prefix)
 
                 # Save image at epoch
@@ -88,6 +89,5 @@ def generate(output_dir: str, gan, checkpoint_dir: str, checkpoint_prefix: str, 
             checkpoint.save(file_prefix=checkpoint_prefix)
 
         train(gan.train_dataset, gan.EPOCHS, checkpoint, checkpoint_prefix, output_dir)
-    else:
-        load(checkpoint, checkpoint_dir)
+
     generate_and_save_image(gan.generator, output_dir + 'final.png', gan.seed, gan.num_examples_to_generate, gan.cmap)
