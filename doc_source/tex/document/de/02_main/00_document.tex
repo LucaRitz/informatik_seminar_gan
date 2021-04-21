@@ -219,12 +219,12 @@ was einem Rauschen gleichkommt, wie in Abbildung \ref{fig:Input-Noise} ersichtli
     \label{fig:Input-Noise}
 \end{figure}
 \para
-Was genau bedeutet nun dieses Rauschen? Nach \glqq Computerphile \grqq{} kann dieses Rauschen einem Punkt in einem
+Was genau bedeutet nun dieses Rauschen? Nach \glqq Computerphile\grqq{} kann dieses Rauschen einem Punkt in einem
 mehrdimensionalen Raum gleichgesetzt werden \cite[~t 16:45]{youtube:gan}. Wird dieser Punkt leicht angepasst, dann
 wird der Generator daraus ein leicht anderes Sample erzeugen, das einem Sample aus dem Datenset $p_{data}$ entspricht.
 Eine Richtung in diesem mehrdimensionalen Raum kann ebenfalls bestimmten Eigenschaften zugewiesen werden. Wird der Punkt
 z.B. in nur eine Richtung verschoben, so wird ein Objekt auf dem Output-Sample leicht grösser. Eine
-Richtung in diesem Raum würde also der Grösse entsprechen \cite{~t 17:35}{youtube:gan}.
+Richtung in diesem Raum würde also der Grösse entsprechen \cite[~t 17:35]{youtube:gan}.
 
 \section{Vor- und Nachteile}
 Ein grosser Nachteil ist, dass $D$ und $G$ während dem Training synchronisiert werden müssen, $G$ kann also nicht
@@ -234,4 +234,4 @@ wo $G$ sehr viele Samples aus dem Noise-Raum $p_z$ auf dasselbe Sample im origin
 Vorteile betreffen das Lernen an sich. So muss nur \Gls{Backpropagation} eingesetzt werden, um Gradienten zu finden.
 Es kann auch gut sein, dass statistische Vorteile erzielt werden durch die Tatsache, dass der Generator $G$ nicht direkt
 mit Samples aus den Testdaten sondern nur mit Informationen von $D$ aktualisiert wird. Die Autoren verweisen hier auf
-den Fakt, dass Komponenten der Testdaten nicht direkt in die Parameter des Generators kopiert werden\cite{8253599}.
+den Fakt, dass Komponenten der Testdaten nicht direkt die Parameter des Generators beeinflussen \cite{8253599}.

@@ -20,22 +20,22 @@ sich die Gleichung \ref{eq:3}.
 \end{align}
 Wie genau ist dies nun im Kontext von Machine Learning zu verstehen? Grundsätzlich geht es darum eine Klassifikation vorzunehmen.
 Dabei kennt man für ein Sample die Wahrheit. Diese Wahrheit zeigt sich in der Form der Wahrscheinlichkeitsangabe für eine Klasse.
-Wenn es sich also z.B. um ein KNN handelt und dieses trainiert wird, um drei Klassen (Apfe, Birne, Zitrone) zu unterscheiden und
+Wenn es sich also z.B. um ein KNN handelt und dieses trainiert wird, um drei Klassen (Apfel, Birne, Zitrone) zu unterscheiden und
 ein Sample \glqq Birne\grqq{} propagiert wird, dann ist die korrekte Wahrscheinlichkeitsverteilung $P$ (0, 1, 0), wohingegen
 das KNN für dieses Sample ein anderes Resultat liefert, nämlich $Q$ (0.2, 0.7, 0.1). Nun kann für das Ereignis \glqq Birne\grqq{} die
 Kreuzentropie über beide Wahrscheinlichkeitsverteilungen berechnet werden, um den Unterschied derer zu bestimmen.
 Konkret bedeutet das für das aktuelle Beispiel:
 \begin{align}
     H(P,Q) = - (P(Apfel) \cdot log(Q(Apfel)) + P(Birne) \cdot log(Q(Birne)) + P(Zitrone) \cdot log(Q(Zitrone)))\\
-    H(P,Q) = - (0 \cdot log(0.2) + 1 \cdot log(0.7) + P(0) \cdot log(0.1))\\
+    H(P,Q) = - (0 \cdot log(0.2) + 1 \cdot log(0.7) + 0 \cdot log(0.1))\\
     H(P,Q) = - (1 \cdot log(0.7))\\
     H(P,Q) = - (-0.514573)\\
     H(P,Q) = 0.514573
 \end{align}
 Die Frage stellt sich nun, wieso diese Kreuzentropie sich so gut als Loss-Funktion eignet. Dazu muss bedacht werden, dass die
 Entropie für eine Wahrscheinlichkeitsverteilung wie im Falle von $P$ des vorherigen Beispiels immer $0$ beträgt. Dies kann
-sehr einfach anhand der Entropie gezeigt werden. Man nehme bei die Wahrscheinlichkeitsverteilung $P$ für die Ereignisse $x_1 \cdots x_n$ die
-folgenden Wahrscheinlichkeiten an: $(p_1, \cdots p_k \cdots p_n)$ wobei $p_k = 1$ und $p_{k \neq p} = 0$ gilt.
+sehr einfach anhand der Entropie gezeigt werden. Man nehme für die Wahrscheinlichkeitsverteilung $P$ für die Ereignisse $x_1 \cdots x_n$ die
+folgenden Wahrscheinlichkeiten an: $(p_1, \cdots, p_k, \cdots, p_n)$ wobei $p_k = 1$ und $p_{i \neq k} = 0$ gilt.
 Dadurch ergibt sich für die Entropie folgenden Formel:
 \begin{align}
     H(P,Q) = - (\sum_{i = 0}^{k - 1}(P(x_i) \cdot log(P(x_i))) + P(x_k) \cdot log(P(x_k)) + \sum_{i = k+1}^{n}(P(x_i) \cdot log(P(x_i)))) \label{eq:4}

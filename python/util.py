@@ -78,7 +78,7 @@ def generate(output_dir: str, gan, checkpoint_dir: str, checkpoint_prefix: str, 
                     print('Train step {0} of {1} done'.format(step, len(dataset)))
 
                 # Save the model every 15 epochs
-                if (epoch + 100) % 15 == 0:
+                if (epoch + 1) % 15 == 0:
                     checkpoint.save(file_prefix=checkpoint_prefix)
 
                 # Save image at epoch
