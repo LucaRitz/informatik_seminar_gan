@@ -61,7 +61,7 @@ discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
 
 BUFFER_SIZE = 60000
 BATCH_SIZE = 256
-EPOCHS = 100
+EPOCHS = 200
 noise_dim = 1000
 num_examples_to_generate = 1
 seed = tf.random.normal([num_examples_to_generate, noise_dim])

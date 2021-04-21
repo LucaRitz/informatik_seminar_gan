@@ -43,9 +43,10 @@ def build_checkpoint(gan) -> tf.train.Checkpoint:
                                      discriminator=gan.discriminator)
 
 
-def generate(output_dir: str, gan, checkpoint_dir: str, checkpoint_prefix: str, do_train=False):
+def generate(output_dir: str, gan, checkpoint_dir: str, checkpoint_prefix: str, do_train=False, restore=False):
     checkpoint = build_checkpoint(gan)
-    load(checkpoint, checkpoint_dir)
+    if restore or not do_train:
+        load(checkpoint, checkpoint_dir)
 
     if do_train:
         @tf.function
@@ -82,7 +83,7 @@ def generate(output_dir: str, gan, checkpoint_dir: str, checkpoint_prefix: str, 
                     checkpoint.save(file_prefix=checkpoint_prefix)
 
                 # Save image at epoch
-                generate_and_save_image(gan.generator, output_dir + 'epoch-{0}.png'.format(epoch), gan.seed, gan.num_examples_to_generate, gan.cmap)
+                generate_and_save_image(gan.generator, output_dir + 'epoch-{0}.png'.format(epoch + 1), gan.seed, gan.num_examples_to_generate, gan.cmap)
 
                 print('Time for epoch {} is {} sec'.format(epoch + 1, time.time() - start))
 
