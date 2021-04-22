@@ -52,3 +52,32 @@ Nun gilt es noch zu beachten, dass die Kreuzentropie der Entropie entspricht, we
 Wahrscheinlichkeitsverteilung handelt. Dadurch wird klar, dass wenn ein Machine-Learning Algorithmus
 ein Resultat einer Klassifikation berechnet, welches exakt mit der Wahrheit übereinstimmt, dies $0$ ergibt.
 Das Sample wurde korrekt klassifiziert.\cite{machinelearningmastery:1:crossEntropy}.
+
+\subsection{Binäre Kreuzentropie}\label{anhang:binary:kreuzentropie}
+Besteht die Grundwahrscheinlichkeit $P(x)$ nur aus zwei möglichen Zuständen ($0$ oder $1$), dann kann die Formel der Kreuzentropie
+vereinfacht werden. Zu Beginn sei angemerkt, dass zwei Wahrscheinlichkeiten angenommen werden können, welche zusammen
+$1$ ergeben. In dem Fall $1 = P_1(x) + P_2(x)$. Da $P(x)$ binär ist, muss entweder $P_1(x)$ oder $P_2(x)$ $0$ sein.
+Nun lässt sich $P_2(x)$ über die Gegenwahrscheinlichkeit von $P_1(x)$ ausdrücken. Siehe dazu die Formel \ref{eq:6}
+\begin{align}
+    P_2(x) = 1 - P_1(x)\label{eq:6}
+\end{align}
+Über die binäre Eigenschaft von $P(x)$ lässt sich die Kreuzentropie in dem Fall wie in Formel \ref{eq:7} formulieren.
+Anzumerken sei hier, dass wenn $P_1(x) = 1$ gilt, nur der Logarithmus des Wahrscheinlichkeitswerts $Q_1(x)$ von Bedeutung ist.
+Wenn $P_2(x) = 1$ gilt, dann gilt automatisch $P_1(x) = 0$ und es ist nur noch der Logarithmus des Wahrscheinlichkeitswerts von
+$Q_2(x)$ relevant.
+\begin{align}
+    H(P,Q) = - \sum_{x \in X} (P_1(x) \cdot log(Q_1(x)) + P_2(x) \cdot log(Q_2(x)))\label{eq:7}
+\end{align}
+$P_1(x)$ sowie $Q_1(x)$ sind sehr natürlich, denn es ist klar, dass ein Sample $x$ eine Wahrscheinlichkeit
+in beiden Wahrscheinlichkeitsverteilungen hat. Es irritiert aber, dass dort anscheinend zwei Wahrscheinlichkeiten für ein und
+dasselbe Ereignis/Sample existieren sollen, also $P_2(x)$ und $Q_2(x)$. Diese Information wird nun tatsächlich nicht direkt in den
+Wahrscheinlichkeitsverteilungen $P(x)$ und $Q(x)$ abgelegt, durch die Binarität von $P(x)$ sind sie jedoch durch die Formel
+\ref{eq:6} indirekt über die Gegenwahrscheinlichkeit gegeben. Siehe dazu Formel \ref{eq:8}.
+\begin{align}
+    H(P,Q) = - \sum_{x \in X} (P_1(x) \cdot log(Q_1(x)) + (1 - P_1(x)) \cdot log(1 - Q_1(x)))\label{eq:8}
+\end{align}
+Nun können in der Formel \ref{eq:8} noch die Indizes der Wahrscheinlichkeitsverteilungen weggelassen werden, womit
+die Endgültige Formel in \ref{eq:9} entsteht.
+\begin{align}
+    H(P,Q) = - \sum_{x \in X} (P(x) \cdot log(Q(x)) + (1 - P(x)) \cdot log(1 - Q(x)))\label{eq:9}
+\end{align}

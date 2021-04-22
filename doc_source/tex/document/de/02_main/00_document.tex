@@ -107,7 +107,8 @@ Für den Diskriminator ist die Sache ein wenig komplizierter \cite{tensorflow:1:
 \end{lstlisting}
 An dieser Stelle werden nun die einzelnen Zeilen der Gleichung \ref{eq:1} zugewiesen. Dazu muss bekannt sein, dass der
 Diskriminator ein binäres Problem beschreibt. Weiterhin scheint die Gleichung \ref{eq:1} der Kreuzentropie entnommen zu sein. Diese
-kann für einen binären Klassifizierer wie in Formel \ref{eq:7} geschrieben werden \cite{stackoverflow:1:crossEntropy}.
+kann für einen binären Klassifizierer wie in Formel \ref{eq:7} geschrieben werden \cite{stackoverflow:1:crossEntropy}
+\footnote{Für eine genauere Herleitung, siehe dazu den Anhang \ref{anhang:binary:kreuzentropie}}.
 \begin{align}
     H(P,Q) = - \sum_{x \in X} (P(x) \cdot log(Q(x)) + (1 - P(x)) \cdot log(1 - Q(x))) \label{eq:7}
 \end{align}
@@ -140,12 +141,13 @@ $-1$ soll nun noch ausgeklammert werden, damit wird ersichtlicht, dass es sich a
 umgedrehte Loss-Function von $D$ handelt (mit kleinem Zusatz).
 \begin{align}
     \widetilde{V(D,G)} = - (\sum_{x \in p_{data}} log(D(x)) + \sum_{z \in p_{z}} log(1 - D(G(z))))\\
-    \frac{1}{m} \widetilde{V(D,G)} = - V(D,G)\label{eq:12}
+    -\frac{1}{m} \widetilde{V(D,G)} = V(D,G)\label{eq:12}
 \end{align}
 Formel \ref{eq:12} erklärt nun den Zusammenhang zwischen der über die Kreuzentropie hergeleiteten Formel wie auch der Value-Function aus Formel \ref{eq:1}.
 Für den Minimax-Algorithmus wird also die Richtung der Optimierung umgedreht, um nach $G$ zu minimieren. Zu beachten gilt auch,
 dass die Formel \ref{eq:1} nicht einfach die Summe bildet sondern das arithmetische Mittel, wobei $m$ die Anzahl der Samples
-ist. Für eine genauere Erlätuerung kann der Algorithmus \label{alg:1} hinzugezogen werden.
+ist. Dies gilt auch nur, wenn die beiden Datensets der Fomel \ref{eq:1} gleich gross sind und genau $m$ Samples
+beinhalten. Für eine genauere Erlätuerung kann der Algorithmus \label{alg:1} hinzugezogen werden.
 
 \newpage
 \subsection{Einschub - Minimax}
