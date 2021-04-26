@@ -38,7 +38,7 @@ sehr einfach anhand der Entropie gezeigt werden. Man nehme für die Wahrscheinli
 folgenden Wahrscheinlichkeiten an: $(p_1, \cdots, p_k, \cdots, p_n)$ wobei $p_k = 1$ und $p_{i \neq k} = 0$ gilt.
 Dadurch ergibt sich für die Entropie folgenden Formel:
 \begin{align}
-    H(P,Q) = - (\sum_{i = 0}^{k - 1}(P(x_i) \cdot log(P(x_i))) + P(x_k) \cdot log(P(x_k)) + \sum_{i = k+1}^{n}(P(x_i) \cdot log(P(x_i)))) \label{eq:4}
+    H(P) = - (\sum_{i = 0}^{k - 1}(P(x_i) \cdot log(P(x_i))) + P(x_k) \cdot log(P(x_k)) + \sum_{i = k+1}^{n}(P(x_i) \cdot log(P(x_i)))) \label{eq:4}
 \end{align}
 Aus der Formel \ref{eq:4} ist ersichtlich, dass die erste wie auch die letzte Summe auf $0$ evaluieren, da die Wahrscheinlichkeit des Ereignisses $x_i$
 jeweils $0$ ist. Einzig das Ereignis $x_k$ ist $1$, daher kann die Formel wie in \ref{eq:5} gekürzt werden.

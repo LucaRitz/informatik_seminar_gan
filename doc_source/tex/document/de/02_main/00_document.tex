@@ -140,7 +140,7 @@ welche nach den Formeln \ref{eq:11} und \ref{eq:10} eigentlich von $D$ minimiert
 $-1$ soll nun noch ausgeklammert werden, damit wird ersichtlicht, dass es sich allem Anschein nach um die
 umgedrehte Loss-Function von $D$ handelt (mit kleinem Zusatz).
 \begin{align}
-    \widetilde{V(D,G)} = - (\sum_{x \in p_{data}} log(D(x)) + \sum_{z \in p_{z}} log(1 - D(G(z))))\\
+    \widetilde{V(D,G)} = - (\frac{1}{|p_{data}|} \cdot \sum_{x \in p_{data}} log(D(x)) + \frac{1}{|p_{z}|} \cdot \sum_{z \in p_{z}} log(1 - D(G(z))))\\
     -\frac{1}{m} \widetilde{V(D,G)} = V(D,G)\label{eq:12}
 \end{align}
 Formel \ref{eq:12} erklärt nun den Zusammenhang zwischen der über die Kreuzentropie hergeleiteten Formel wie auch der Value-Function aus Formel \ref{eq:1}.
