@@ -116,28 +116,27 @@ Die erste Zeile der \glqq discriminator\textunderscore loss\grqq{} Funktion bere
 sowie der erwarteten Wahrscheinlichkeiten von $D$ für die originalen Samples. Für den Diskriminator entspricht $P(x) = 1$ für alle Wahrscheinlichkeiten,
 wobei $Q(x) = D(x)$ gilt und das Sample $x$ aus $p_{data}$ stammt. Eingesetzt in Formel \ref{eq:7} ergibt dies \ref{eq:8}.
 \begin{align}
-    H(P,Q) = - \sum_{x \in p_{data}} (P(x) \cdot log(D(x)) + (1 - P(x)) \cdot log(1 - D(x))) \label{eq:8}\\
-    H(P,Q) = - \sum_{x \in p_{data}} log(D(x)) \label{eq:11}
+    H(P,D) = - \sum_{x \in p_{data}} (P(x) \cdot log(D(x)) + (1 - P(x)) \cdot log(1 - D(x))) \label{eq:8}\\
+    H(1,D) = - \sum_{x \in p_{data}} log(D(x)) \label{eq:11}
 \end{align}
 Die darauffolgende Zeile der Funktion \glqq discriminator\textunderscore loss\grqq{} wird dem zweiten Summand der Gleichung \ref{eq:1} zugewiesen.
 In diesem Fall ist $P(x) = 0$ für alle erwarteten Wahrscheinlichkeiten (das generierte Sample gehört nicht zum
 originalen Datenset), $Q(x) = D(x)$ und $x$ stammt aus $p_{g}$.
 \begin{align}
-    H(P,Q) = - \sum_{x \in p_{g}} (P(x) \cdot log(D(x)) + (1 - P(x)) \cdot log(1 - D(x)))\\
-    H(P,Q) = - \sum_{x \in p_{g}} log(1 - D(x)) \label{eq:9}
+    H(P,D) = - \sum_{x \in p_{g}} (P(x) \cdot log(D(x)) + (1 - P(x)) \cdot log(1 - D(x)))\\
+    H(0,D) = - \sum_{x \in p_{g}} log(1 - D(x)) \label{eq:9}
 \end{align}
-Wenn nun in Betracht gezogen wird, dass $x$ nicht aus $p_g$ stammt, sondern aus den Noise-Samples $p_z$ und $x = z$ gilt,
+Wenn nun in Betracht gezogen wird, dass $x$ nicht aus $p_g$ stammt, sondern aus den Noise-Samples $p_z$ und $x = G(z)$ gilt,
 dann kann die Formel \ref{eq:9} so umgeschrieben werden, dass sie mit der Formel \ref{eq:1} korreliert.
 \begin{align}
-    x(z) = G(z)\\
-    H(P,Q) = - \sum_{z \in p_{z}} log(1 - D(G(z))) \label{eq:10}
+    H(0,D(G)) = - \sum_{z \in p_{z}} log(1 - D(G(z))) \label{eq:10}
 \end{align}
 Zusammenaddiert ergeben die Formeln \ref{eq:11} und \ref{eq:10} fast den Loss-Wert der Formel \ref{eq:1} und damit auch die Minimax-Value-Funktion,
 welche nach den Formeln \ref{eq:11} und \ref{eq:10} eigentlich von $D$ minimiert werden will.
 \begin{align}
     \widetilde{V(D,G)} = - \sum_{x \in p_{data}} log(D(x)) - \sum_{z \in p_{z}} log(1 - D(G(z)))
 \end{align}
-$-1$ soll nun noch ausgeklammert werden, damit wird ersichtlicht, dass es sich allem Anschein nach um die
+$-1$ soll nun noch ausgeklammert werden, damit wird ersichtlich, dass es sich allem Anschein nach um die
 umgedrehte Loss-Function von $D$ handelt (mit kleinem Zusatz).
 \begin{align}
     \widetilde{V(D,G)} = - (\frac{1}{|p_{data}|} \cdot \sum_{x \in p_{data}} log(D(x)) + \frac{1}{|p_{z}|} \cdot \sum_{z \in p_{z}} log(1 - D(G(z))))\\
