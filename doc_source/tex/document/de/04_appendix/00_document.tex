@@ -64,7 +64,8 @@ Nun lässt sich $P_2(x)$ über die Gegenwahrscheinlichkeit von $P_1(x)$ ausdrüc
 Über die binäre Eigenschaft von $P(x)$ lässt sich die Kreuzentropie in dem Fall wie in Formel \ref{eq:7} formulieren.
 Anzumerken sei hier, dass wenn $P_1(x) = 1$ gilt, nur der Logarithmus des Wahrscheinlichkeitswerts $Q_1(x)$ von Bedeutung ist.
 Wenn $P_2(x) = 1$ gilt, dann gilt automatisch $P_1(x) = 0$ und es ist nur noch der Logarithmus des Wahrscheinlichkeitswerts von
-$Q_2(x)$ relevant.
+$Q_2(x)$ relevant. Es wird also jeweils die Abweichung der Wahrscheinlichkeiten $P_1(x)$ zu $Q_1(x)$ oder der Wahrscheinlichkeiten
+$P_2(x)$ zu $Q_2(x)$ betrachtet.
 \begin{align}
     H(P,Q) = - \sum_{x \in X} (P_1(x) \cdot log(Q_1(x)) + P_2(x) \cdot log(Q_2(x)))\label{eq:7}
 \end{align}
@@ -81,3 +82,10 @@ die Endgültige Formel in \ref{eq:9} entsteht.
 \begin{align}
     H(P,Q) = - \sum_{x \in X} (P(x) \cdot log(Q(x)) + (1 - P(x)) \cdot log(1 - Q(x)))\label{eq:9}
 \end{align}
+Dies kann nun folgendermassen interpretiert werden:
+\begin{description}
+    \item[$P(x) = 1$] In dem Fall wird die Abweichung zum Wert $1$ betrachtet. Daher wird der Wert aus $Q(x)$ übernommen.
+    Das Resultat muss $0$ lauten, wenn $Q(x)$ ebenfalls $1$ ist.
+    \item[$P(x) = 0$] Es wird die Abweichung zum Wert $0$ gemessen, was bedeutet, dass $1 - P(x)$ auf $1$ evaluiert und
+    $\log(1 - Q(x))$ demnach $0$ ergeben sollte, wenn $Q(x)$ ebenfalls $0$ ist.
+\end{description}
