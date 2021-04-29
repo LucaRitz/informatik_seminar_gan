@@ -136,17 +136,22 @@ welche nach den Formeln \ref{eq:11} und \ref{eq:10} eigentlich von $D$ minimiert
 \begin{align}
     \widetilde{V(D,G)} = - \sum_{x \in p_{data}} log(D(x)) - \sum_{z \in p_{z}} log(1 - D(G(z)))
 \end{align}
-$-1$ soll nun noch ausgeklammert werden, damit wird ersichtlich, dass es sich allem Anschein nach um die
-umgedrehte Loss-Function von $D$ handelt (mit kleinem Zusatz).
+Es muss nun noch berücksichtigt werden, dass effektiv der Erwartungswert von $\widetilde{V(D,G)}$ relevant ist. Daher
+wird $\widetilde{V(D,G)}$ um den Zusatz des arithmetischen Mittels erweitert und im gleichen Zuge wird ebenfalls noch
+$-1$ ausgeklammert. Es resultiert die Formel \ref{eq:13}.
 \begin{align}
-    \widetilde{V(D,G)} = - (\frac{1}{|p_{data}|} \cdot \sum_{x \in p_{data}} log(D(x)) + \frac{1}{|p_{z}|} \cdot \sum_{z \in p_{z}} log(1 - D(G(z))))\\
-    -\frac{1}{m} \widetilde{V(D,G)} = V(D,G)\label{eq:12}
+    \widetilde{V(D,G)} = - (\frac{1}{|p_{data}|} \cdot \sum_{x \in p_{data}} log(D(x)) + \frac{1}{|p_{z}|} \cdot \sum_{z \in p_{z}} log(1 - D(G(z))))\label{eq:13}
+\end{align}
+Unter der Annahme, dass die Datensets $p_{data}$ sowie $p_{z}$ der Formel \ref{eq:13} gleich gross sind und $m$ entsprechen, kann $\widetilde{V(D,G)}$
+auch wie in Formel \ref{eq:14} beschrieben werden.
+\begin{align}
+    \widetilde{V(D,G)} = - \frac{1}{m} \cdot (\sum_{x \in p_{data}} log(D(x)) + \sum_{z \in p_{z}} log(1 - D(G(z))))\label{eq:14}
 \end{align}
 Formel \ref{eq:12} erklärt nun den Zusammenhang zwischen der über die Kreuzentropie hergeleiteten Formel wie auch der Value-Function aus Formel \ref{eq:1}.
-Für den Minimax-Algorithmus wird also die Richtung der Optimierung umgedreht, um nach $G$ zu minimieren. Zu beachten gilt auch,
-dass die Formel \ref{eq:1} nicht einfach die Summe bildet sondern das arithmetische Mittel (Erwartungswert), wobei $m$ die Anzahl der Samples
-ist. Dies gilt auch nur, wenn die beiden Datensets der Fomel \ref{eq:1} gleich gross sind und genau $m$ Samples
-beinhalten. Für eine genauere Erlätuerung kann der Algorithmus \label{alg:1} hinzugezogen werden.
+\begin{align}
+    -\widetilde{V(D,G)} = V(D,G)\label{eq:12}
+\end{align}
+Für den Minimax-Algorithmus wird also die Richtung der Optimierung umgedreht, um nach $G$ zu minimieren.
 
 \newpage
 \subsection{Einschub - Minimax}
