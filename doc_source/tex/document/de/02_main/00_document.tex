@@ -136,8 +136,8 @@ welche nach den Formeln \ref{eq:11} und \ref{eq:10} eigentlich von $D$ minimiert
 \begin{align}
     \widetilde{V(D,G)} = - \sum_{x \in p_{data}} log(D(x)) - \sum_{z \in p_{z}} log(1 - D(G(z)))
 \end{align}
-Es muss nun noch berücksichtigt werden, dass effektiv der Erwartungswert von $\widetilde{V(D,G)}$ relevant ist. Daher
-wird $\widetilde{V(D,G)}$ um den Zusatz des arithmetischen Mittels erweitert und im gleichen Zuge wird ebenfalls noch
+Es muss nun noch berücksichtigt werden, dass effektiv der Erwartungswert der Summanden von $\widetilde{V(D,G)}$ relevant ist. Daher
+wird $\widetilde{V(D,G)}$ um den Zusatz des arithmetischen Mittels\footnote{Vom Erwartungswert zum arithmetischen Mittel, siehe Anhang \ref{anhang:erwartungswert}} erweitert und im gleichen Zuge wird ebenfalls noch
 $-1$ ausgeklammert. Es resultiert die Formel \ref{eq:13}.
 \begin{align}
     \widetilde{V(D,G)} = - (\frac{1}{|p_{data}|} \cdot \sum_{x \in p_{data}} log(D(x)) + \frac{1}{|p_{z}|} \cdot \sum_{z \in p_{z}} log(1 - D(G(z))))\label{eq:13}

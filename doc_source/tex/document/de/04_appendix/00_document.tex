@@ -89,3 +89,16 @@ Dies kann nun folgendermassen interpretiert werden:
     \item[$P(x) = 0$] Es wird die Abweichung zum Wert $0$ gemessen, was bedeutet, dass $1 - P(x)$ auf $1$ evaluiert und
     $\log(1 - Q(x))$ demnach $0$ ergeben sollte, wenn $Q(x)$ ebenfalls $0$ ist.
 \end{description}
+
+\section{Erwartungswert - arithmetisches Mittel}\label{anhang:erwartungswert}
+Der Erwartungswert gibt den Durchschnitt der Ergebnisse einer Zufallsvariablen an.\cite{wiki:erwartungswert}
+\begin{align}
+    X = \{x_1, \ldots, x_n\}\\
+    E(X) = \sum_{i = 1}^{n} (p_i \cdot X_i)
+\end{align}
+Wenn die Wahrscheinlichkeitsverteilung gleichverteilt ist, dann entspricht jede
+Wahrscheinlichkeit $p_i$ derselben Wahrscheinlichkeit $\frac{1}{n}$.
+Durch Ausklammern ergibt sich das arithmetische Mittel.
+\begin{align}
+    E(X) = \frac{1}{n} \cdot \sum_{i = 1}^{n} (X_i)
+\end{align}
