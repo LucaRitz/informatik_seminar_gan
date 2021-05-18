@@ -6,17 +6,17 @@ Es ist also ein Mass, um die Differenz zwischen zwei Wahrscheinlichkeitsverteilu
 Menge von Ereignissen zu beschreiben. Um dies zu verstehen, wird zuerst die Entropie betrachtet. Diese beschreibt in der
 Informatik die Anzahl Bits, welche benötigt werden, um ein zufällig gewähltes Element aus einer Wahrscheinlichkeitsverteilung
 zu übertragen \cite{machinelearningmastery:1:crossEntropy}. Die Entropie kann weiterhin berechnet werden, wenn eine Menge
-an Ereignissen $x$ in $X$ sowie deren Wahrscheinlichkeit $P(x)$ bekannt sind. Dies ist aus der Gleichung \ref{eq:2} zu entnehmen.
+an Ereignissen $x$ in $X$ sowie deren Wahrscheinlichkeit $P(x)$ bekannt sind. Dies ist aus der Gleichung \ref{eq:ap:2} zu entnehmen.
 \begin{align}
-    H(P) = - \sum_{x \in X} P(x) \cdot log(P(x)) \label{eq:2}
+    H(P) = - \sum_{x \in X} P(x) \cdot log(P(x)) \label{eq:ap:2}
 \end{align}
 Die Kreuzentropie baut nun auf dieser Definition auf. Sie beschreibt die Anzahl Bits, welche benötigt werden, um ein
 durchschnittliches Ereignis einer Wahrscheinlichkeitsverteilung im Vergleich zu einer anderen darzustellen \cite{machinelearningmastery:1:crossEntropy}.
 Nun kann ein Ereignis $x$ in zwei Wahrscheinlichkeitsräumen vorkommen. Einerseits in $P$, andererseits in $Q$. Weiterhin
 müssen die Wahrscheinlichkeiten der Ereignisse $P(x)$ und $Q(x)$ innerhalb dieser Verteilungen bekannt sein. Dadurch ergibt
-sich die Gleichung \ref{eq:3}.
+sich die Gleichung \ref{eq:ap:3}.
 \begin{align}
-    H(P,Q) = - \sum_{x \in X} P(x) \cdot log(Q(x)) \label{eq:3}
+    H(P,Q) = - \sum_{x \in X} P(x) \cdot log(Q(x)) \label{eq:ap:3}
 \end{align}
 Wie genau ist dies nun im Kontext von Machine Learning zu verstehen? Grundsätzlich geht es darum eine Klassifikation vorzunehmen.
 Dabei kennt man für ein Sample die Wahrheit. Diese Wahrheit zeigt sich in der Form der Wahrscheinlichkeitsangabe für eine Klasse.
@@ -38,12 +38,12 @@ sehr einfach anhand der Entropie gezeigt werden. Man nehme für die Wahrscheinli
 folgenden Wahrscheinlichkeiten an: $(p_1, \cdots, p_k, \cdots, p_n)$ wobei $p_k = 1$ und $p_{i \neq k} = 0$ gilt.
 Dadurch ergibt sich für die Entropie folgenden Formel:
 \begin{align}
-    H(P) = - (\sum_{i = 0}^{k - 1}(P(x_i) \cdot log(P(x_i))) + P(x_k) \cdot log(P(x_k)) + \sum_{i = k+1}^{n}(P(x_i) \cdot log(P(x_i)))) \label{eq:4}
+    H(P) = - (\sum_{i = 0}^{k - 1}(P(x_i) \cdot log(P(x_i))) + P(x_k) \cdot log(P(x_k)) + \sum_{i = k+1}^{n}(P(x_i) \cdot log(P(x_i)))) \label{eq:ap:4}
 \end{align}
-Aus der Formel \ref{eq:4} ist ersichtlich, dass die erste wie auch die letzte Summe auf $0$ evaluieren, da die Wahrscheinlichkeit des Ereignisses $x_i$
-jeweils $0$ ist. Einzig das Ereignis $x_k$ ist $1$, daher kann die Formel wie in \ref{eq:5} gekürzt werden.
+Aus der Formel \ref{eq:ap:4} ist ersichtlich, dass die erste wie auch die letzte Summe auf $0$ evaluieren, da die Wahrscheinlichkeit des Ereignisses $x_i$
+jeweils $0$ ist. Einzig das Ereignis $x_k$ ist $1$, daher kann die Formel wie in \ref{eq:ap:5} gekürzt werden.
 \begin{align}
-    H(P) = - (P(x_k) \cdot log(P(x_k))) \label{eq:5}\\
+    H(P) = - (P(x_k) \cdot log(P(x_k))) \label{eq:ap:5}\\
     H(P) = - (1 \cdot log(1))\\
     H(P) = - (1 \cdot 0)\\
     H(P) = 0
@@ -57,30 +57,30 @@ Das Sample wurde korrekt klassifiziert.\cite{machinelearningmastery:1:crossEntro
 Besteht die Grundwahrscheinlichkeit $P(x)$ nur aus zwei möglichen Zuständen ($0$ oder $1$), dann kann die Formel der Kreuzentropie
 vereinfacht werden. Zu Beginn sei angemerkt, dass zwei Wahrscheinlichkeiten angenommen werden können, welche zusammen
 $1$ ergeben. In dem Fall $1 = P_1(x) + P_2(x)$. Da $P(x)$ binär ist, muss entweder $P_1(x)$ oder $P_2(x)$ $0$ sein.
-Nun lässt sich $P_2(x)$ über die Gegenwahrscheinlichkeit von $P_1(x)$ ausdrücken. Siehe dazu die Formel \ref{eq:6}
+Nun lässt sich $P_2(x)$ über die Gegenwahrscheinlichkeit von $P_1(x)$ ausdrücken. Siehe dazu die Formel \ref{eq:ap:6}
 \begin{align}
-    P_2(x) = 1 - P_1(x)\label{eq:6}
+    P_2(x) = 1 - P_1(x)\label{eq:ap:6}
 \end{align}
-Über die binäre Eigenschaft von $P(x)$ lässt sich die Kreuzentropie in dem Fall wie in Formel \ref{eq:7} formulieren.
+Über die binäre Eigenschaft von $P(x)$ lässt sich die Kreuzentropie in dem Fall wie in Formel \ref{eq:ap:7} formulieren.
 Anzumerken sei hier, dass wenn $P_1(x) = 1$ gilt, nur der Logarithmus des Wahrscheinlichkeitswerts $Q_1(x)$ von Bedeutung ist.
 Wenn $P_2(x) = 1$ gilt, dann gilt automatisch $P_1(x) = 0$ und es ist nur noch der Logarithmus des Wahrscheinlichkeitswerts von
 $Q_2(x)$ relevant. Es wird also jeweils die Abweichung der Wahrscheinlichkeiten $P_1(x)$ zu $Q_1(x)$ oder der Wahrscheinlichkeiten
 $P_2(x)$ zu $Q_2(x)$ betrachtet.
 \begin{align}
-    H(P,Q) = - \sum_{x \in X} (P_1(x) \cdot log(Q_1(x)) + P_2(x) \cdot log(Q_2(x)))\label{eq:7}
+    H(P,Q) = - \sum_{x \in X} (P_1(x) \cdot log(Q_1(x)) + P_2(x) \cdot log(Q_2(x)))\label{eq:ap:7}
 \end{align}
 $P_1(x)$ sowie $Q_1(x)$ sind sehr natürlich, denn es ist klar, dass ein Sample $x$ eine Wahrscheinlichkeit
 in beiden Wahrscheinlichkeitsverteilungen hat. Es irritiert aber, dass dort anscheinend zwei Wahrscheinlichkeiten für ein und
 dasselbe Ereignis/Sample existieren sollen, also $P_2(x)$ und $Q_2(x)$. Diese Information wird nun tatsächlich nicht direkt in den
 Wahrscheinlichkeitsverteilungen $P(x)$ und $Q(x)$ abgelegt, durch die Binarität von $P(x)$ sind sie jedoch durch die Formel
-\ref{eq:6} indirekt über die Gegenwahrscheinlichkeit gegeben. Siehe dazu Formel \ref{eq:8}.
+\ref{eq:ap:6} indirekt über die Gegenwahrscheinlichkeit gegeben. Siehe dazu Formel \ref{eq:ap:8}.
 \begin{align}
-    H(P,Q) = - \sum_{x \in X} (P_1(x) \cdot log(Q_1(x)) + (1 - P_1(x)) \cdot log(1 - Q_1(x)))\label{eq:8}
+    H(P,Q) = - \sum_{x \in X} (P_1(x) \cdot log(Q_1(x)) + (1 - P_1(x)) \cdot log(1 - Q_1(x)))\label{eq:ap:8}
 \end{align}
-Nun können in der Formel \ref{eq:8} noch die Indizes der Wahrscheinlichkeitsverteilungen weggelassen werden, womit
-die Endgültige Formel in \ref{eq:9} entsteht.
+Nun können in der Formel \ref{eq:ap:8} noch die Indizes der Wahrscheinlichkeitsverteilungen weggelassen werden, womit
+die Endgültige Formel in \ref{eq:ap:9} entsteht.
 \begin{align}
-    H(P,Q) = - \sum_{x \in X} (P(x) \cdot log(Q(x)) + (1 - P(x)) \cdot log(1 - Q(x)))\label{eq:9}
+    H(P,Q) = - \sum_{x \in X} (P(x) \cdot log(Q(x)) + (1 - P(x)) \cdot log(1 - Q(x)))\label{eq:ap:9}
 \end{align}
 Dies kann nun folgendermassen interpretiert werden:
 \begin{description}

@@ -52,12 +52,13 @@ wird.
 
 \section{Funktionsweise}
 Formell ausgedrückt besteht ein \Gls{GAN} aus zwei ableitbaren Funktionen $G(z;\theta_g)$ und $D(x,\theta_d)$, welche durch zwei \Glspl{Multilayer perceptron}
-dargestellt werden. Dabei bilden jeweils $\theta_g$ sowie $\theta_d$ die Parameter der Netzwerke. Um die generierten Daten $p_g$ über ein Sample $x$ aus
-dem originalen Datenset $p_{data}$ zu trainieren, wird eine Input-Noise-Funktion $p_z(z)$ definiert. $G(z;\theta_g)$ bildet dabei das
-Mapping zwischen diesen Noise-Daten und dem originalen Datenset $p_{data}$.
-Aus dem Noise wird also ein Sample erzeugt, welches möglichst mit den Samples aus $p_{data}$ korreliert.
-$D(x)$ wiederum gibt einen einzelnen Skalar aus, der die Wahrscheinlichkeit beschreibt, ob ein Sample $x$ eher aus dem originalen Datenset $p_{data}$
-als aus dem generierten Datenset $p_g$ (beinhaltet alle Samples von $G$) stammt.
+dargestellt werden. Dabei bilden jeweils $\theta_g$ sowie $\theta_d$ die Parameter der Netzwerke. Um die generierten Daten, welche der Wahrscheinlichkeitsverteilung $p_g$ folgen, über ein Sample $x$ aus
+dem originalen Datenset, welche wiederum der Wahrscheinlichkeitsverteilung $p_{data}$ folgen, zu trainieren, wird eine vorgängige Verteilung $p_z(z)$ definiert. Diese bildet die
+Wahrscheinlichkeitsverteilung der Noise-Samples. $G(z;\theta_g)$ bildet dabei das
+Mapping zwischen diesen Noise-Daten und dem originalen Datenset.
+Aus dem Noise wird also ein Sample erzeugt, welches möglichst mit den originalen Samples korreliert.
+$D(x)$ wiederum gibt einen einzelnen Skalar aus, der die Wahrscheinlichkeit beschreibt, ob ein Sample $x$ eher aus dem originalen Datenset mit der Verteilung $p_{data}$
+als aus dem generierten Datenset mit der Verteilung $p_g$ (beinhaltet alle Samples von $G$) stammt.
 $D$ wird nun so trainiert, um die Wahrscheinlichkeit zu maximieren, das korrekte Label einem Input-Sample $x$ zu geben. Dabei gibt es zwei Labels:
 \glqq Stammt aus original Datenset\grqq{} und \glqq Stammt aus generiertem Datenset\grqq{}. Simultan dazu wird $G$ trainiert, um die Funktion
 $\log(1 - D(G(z)))$ zu minimieren\cite[p.~1]{8253599}. In Worten: $G(z)$ generiert ein Sample aus den Noise-Daten.
@@ -79,7 +80,10 @@ Nachfolgend werden einige Gedanken des Autors dazu aufgeführt.\\
     D(x) = \frac{1}{2}, D(G(z)) = \frac{1}{2} \Rightarrow \log(\frac{1}{2}) + \log(1 - \frac{1}{2}) = \log(\frac{1}{2}) + \log(\frac{1}{2}) = -\log(4) = -1.3862
 \end{align}
 Nach den Autoren bildet der Fall 2 das globale Minimum, welches eben nur erzielt werden kann, wenn der Discriminator nicht mehr zwischen
-den beiden Datensets unterscheiden kann \cite[p.~4-5]{8253599}. Es gilt: $p_{data} = p_{g}$
+den beiden Datensets unterscheiden kann \cite[p.~4-5]{8253599}. Es gilt $p_{data} = p_{g}$. Wichtig hierbei zu erwähnen ist
+die Tatsache, dass der Diskriminator mit dem Generator gekoppelt zu sein scheint. Soll heissen, dass wenn der Diskriminator im Schnitt für
+die Samples aus dem originalen Datenraum den Wert $x$ angibt, er für Samples aus dem generierten Datenraum $1 - x$ als Resultat liefert.
+
 Was genau diese sogenannte Value-Funktion $V(G,D)$ darstellt und wie sie hergeleitet wurde, wird im nächsten Abschnitt
 genauer erläutert.
 \para
@@ -113,39 +117,34 @@ kann für einen binären Klassifizierer wie in Formel \ref{eq:7} geschrieben wer
     H(P,Q) = - \sum_{x \in X} (P(x) \cdot log(Q(x)) + (1 - P(x)) \cdot log(1 - Q(x))) \label{eq:7}
 \end{align}
 Die erste Zeile der \glqq discriminator\textunderscore loss\grqq{} Funktion berechnet die Kreuzentropie zwischen den Wahrscheinlichkeiten der originalen Samples
-sowie der erwarteten Wahrscheinlichkeiten von $D$ für die originalen Samples. Für den Diskriminator entspricht $P(x) = 1$ für alle Wahrscheinlichkeiten,
-wobei $Q(x) = D(x)$ gilt und das Sample $x$ aus $p_{data}$ stammt. Eingesetzt in Formel \ref{eq:7} ergibt dies \ref{eq:8}.
+sowie der erwarteten Wahrscheinlichkeiten von $D$ für die originalen Samples. Für den Diskriminator entspricht $P(x) = p_{data}(x) = 1$ für alle Wahrscheinlichkeiten,
+wobei $Q(x) = D(x)$ gilt und das Sample $x$ aus dem originalen Datenset stammt. Eingesetzt in Formel \ref{eq:7} ergibt dies \ref{eq:8}.
 \begin{align}
-    H(P,D) = - \sum_{x \in p_{data}} (P(x) \cdot log(D(x)) + (1 - P(x)) \cdot log(1 - D(x))) \label{eq:8}\\
-    H(1,D) = - \sum_{x \in p_{data}} log(D(x)) \label{eq:11}
+    H(p_{data},D) = - \sum_{x \sim p_{data}} (p_{data}(x) \cdot log(D(x)) + (1 - p_{data}(x)) \cdot log(1 - D(x))) \label{eq:8}\\
+    H(1,D) = - \sum_{x \sim p_{data}} log(D(x)) \label{eq:11}
 \end{align}
 Die darauffolgende Zeile der Funktion \glqq discriminator\textunderscore loss\grqq{} wird dem zweiten Summand der Gleichung \ref{eq:1} zugewiesen.
-In diesem Fall ist $P(x) = 0$ für alle erwarteten Wahrscheinlichkeiten (das generierte Sample gehört nicht zum
-originalen Datenset), $Q(x) = D(x)$ und $x$ stammt aus $p_{g}$.
+In diesem Fall ist $P(x) = p_{g}(x) = 0$ für alle erwarteten Wahrscheinlichkeiten (das generierte Sample gehört nicht zum
+originalen Datenset), $Q(x) = D(x)$ und $x$ stammt aus dem generierten Datenset.
 \begin{align}
-    H(P,D) = - \sum_{x \in p_{g}} (P(x) \cdot log(D(x)) + (1 - P(x)) \cdot log(1 - D(x)))\\
-    H(0,D) = - \sum_{x \in p_{g}} log(1 - D(x)) \label{eq:9}
+    H(p_{g}(x),D) = - \sum_{x \sim p_{g}} (p_{g}(x) \cdot log(D(x)) + (1 - p_{g}(x)) \cdot log(1 - D(x)))\\
+    H(0,D) = - \sum_{x \sim p_{g}} log(1 - D(x)) \label{eq:9}
 \end{align}
-Wenn nun in Betracht gezogen wird, dass $x$ nicht aus $p_g$ stammt, sondern aus den Noise-Samples $p_z$ und $x = G(z)$ gilt,
+Wenn nun in Betracht gezogen wird, dass $x$ nicht der Wahrscheinlichkeitsverteilung $p_g$, sondern der Noise-Verteilung $p_z$ folgt und $x = G(z)$ gilt,
 dann kann die Formel \ref{eq:9} so umgeschrieben werden, dass sie mit der Formel \ref{eq:1} korreliert.
 \begin{align}
-    H(0,D(G)) = - \sum_{z \in p_{z}} log(1 - D(G(z))) \label{eq:10}
+    H(0,D(G)) = - \sum_{z \sim p_{z}} log(1 - D(G(z))) \label{eq:10}
 \end{align}
 Zusammenaddiert ergeben die Formeln \ref{eq:11} und \ref{eq:10} fast den Loss-Wert der Formel \ref{eq:1} und damit auch die Minimax-Value-Funktion,
 welche nach den Formeln \ref{eq:11} und \ref{eq:10} eigentlich von $D$ minimiert werden will.
 \begin{align}
-    \widetilde{V(D,G)} = - \sum_{x \in p_{data}} log(D(x)) - \sum_{z \in p_{z}} log(1 - D(G(z)))
+    \widetilde{V(D,G)} = - \sum_{x \sim p_{data}} log(D(x)) - \sum_{z \sim p_{z}} log(1 - D(G(z)))
 \end{align}
 Es muss nun noch berücksichtigt werden, dass effektiv der Erwartungswert der Summanden von $\widetilde{V(D,G)}$ relevant ist. Daher
 wird $\widetilde{V(D,G)}$ um den Zusatz des arithmetischen Mittels\footnote{Vom Erwartungswert zum arithmetischen Mittel, siehe Anhang \ref{anhang:erwartungswert}} erweitert und im gleichen Zuge wird ebenfalls noch
-$-1$ ausgeklammert. Es resultiert die Formel \ref{eq:13}.
+$-1$ ausgeklammert. Es resultiert die Formel \ref{eq:13} wenn genau $m$ Samples ausgewählt werden.
 \begin{align}
-    \widetilde{V(D,G)} = - (\frac{1}{|p_{data}|} \cdot \sum_{x \in p_{data}} log(D(x)) + \frac{1}{|p_{z}|} \cdot \sum_{z \in p_{z}} log(1 - D(G(z))))\label{eq:13}
-\end{align}
-Unter der Annahme, dass die Datensets $p_{data}$ sowie $p_{z}$ der Formel \ref{eq:13} gleich gross sind und $m$ entsprechen, kann $\widetilde{V(D,G)}$
-auch wie in Formel \ref{eq:14} beschrieben werden.
-\begin{align}
-    \widetilde{V(D,G)} = - \frac{1}{m} \cdot (\sum_{x \in p_{data}} log(D(x)) + \sum_{z \in p_{z}} log(1 - D(G(z))))\label{eq:14}
+    \widetilde{V(D,G)} = - \frac{1}{m} \cdot (\sum_{x \sim p_{data}} log(D(x)) + \sum_{z \sim p_{z}} log(1 - D(G(z))))\label{eq:13}
 \end{align}
 Formel \ref{eq:12} erklärt nun den Zusammenhang zwischen der über die Kreuzentropie hergeleiteten Formel wie auch der Value-Function aus Formel \ref{eq:1}.
 \begin{align}
@@ -162,7 +161,7 @@ Dabei geht man davon aus, dass der Gegner immer so agiert, damit er seine Gewinn
 der KI minimiert.\cite{towardsdatascience:minimax} Die Züge, welche gemacht werden können, werden über einen sogenannten
 Game-Tree dargestellt. Dieser ist in Abbildung \ref{fig:Berechneter GAN-Game-Tree} ersichtlich,
 es ist der Game-Tree für ein \Gls{GAN} gegeben. Jeder Layer stellt einen Zug in diesem Spiel dar.
-Innerhalb eines Zuges gibt es viele Möglichkeiten. Jede dieser Möglichkeiten wird über einen Node dargestellt.
+Innerhalb eines Zuges gibt es viele Möglichkeiten. Jede dieser Möglichkeiten wird über einen Node repräsentiert.
 Für ein \Gls{GAN} sind dies alle möglichen Zustände der Variablen des neuronalen Netzwerks. Der Branching-Faktor ist also
 sehr gross. In der Gleichung \ref{eq:1} geht es um die Maximierung für $D$, weswegen die grünen Layer zu $D$ gehören. In diesen Zügen
 soll der Algorithmus die Value-Funktion $V(G,D)$ für einen Node aus seinen Nachfolgern maximal wählen. Hingegen soll $G$ minimiert werden, weswegen
@@ -190,7 +189,7 @@ Dieser Ablauf ist aus dem Algorithmus \ref{alg:1} ersichtlich, welcher von den A
     \For{number of epochs}{
         \For{k steps}{
             Sample minibatch of $m$ noise samples $\{z^{(1)}, \cdots, z^{(m)}\}$ from noise prior $p_{g}(z)$\\
-            Sample minibatch of $m$ originals ${x^{(1)}, \cdots, x^{(m)}}$ from original data set $p_{data}(x)$\\
+            Sample minibatch of $m$ originals ${x^{(1)}, \cdots, x^{(m)}}$ from original data generating distribution $p_{data}(x)$\\
             Update the discriminator by ascending its stochastic gradient:\\
             $\nabla_{\theta_d} \frac{1}{m}\sum_{i=1}^{m}[\log D(x^{(i)}) + \log(1 - D(G(z^{(i)})))]$
         }
@@ -209,7 +208,7 @@ jeweils genau eine richtige Lösung \cite[~t 4:00]{youtube:gan}. Die Problematik
 unendliche Menge an korrekten Lösungen gibt. Es kann also eine Lösung bei einem \Gls{KNN} angefragt werden, die erhaltene
 Lösung muss dann aber mit einer Art \glqq Zufälligkeit\grqq{} verändert, respektive korrigiert werden.
 \para
-Wie Eingangs erwähnt, bildet $G$ ein Mapper von Noise-Samples $z$ nach Samples in $x \in p_{data}$. Weiterhin ist nach
+Wie Eingangs erwähnt, bildet $G$ ein Mapper von Noise-Samples $z$ nach Samples $x ~ p_{data}$. Weiterhin ist nach
 dem Beispiel in Tensorflow das neuronale Netz von $G$ als \Gls{CNN} definiert. Wahrscheinlich entspricht die Input-Dimension des
 Bilds der Output-Dimension \cite{tensorflow:1:gan}. Damit ist die Antwort auf die Frage bereits vornweg genommen.
 Die Frage selbst lautet, wie der Generator Bilder erzeugt. Um dies trotzdem ein wenig genauer zu erläutern wird zu Beginn
@@ -231,7 +230,7 @@ was einem Rauschen gleichkommt, wie in Abbildung \ref{fig:Input-Noise} ersichtli
 \para
 Was genau bedeutet nun dieses Rauschen? Nach \glqq Computerphile\grqq{} kann dieses Rauschen einem Punkt in einem
 mehrdimensionalen Raum gleichgesetzt werden \cite[~t 16:45]{youtube:gan}. Wird dieser Punkt leicht angepasst, dann
-wird der Generator daraus ein leicht anderes Sample erzeugen, das einem Sample aus dem Datenset $p_{data}$ entspricht.
+wird der Generator daraus ein leicht anderes Sample erzeugen, das einem Sample aus dem originalen Datenset entspricht.
 Eine Richtung in diesem mehrdimensionalen Raum kann ebenfalls bestimmten Eigenschaften zugewiesen werden. Wird der Punkt
 z.B. in nur eine Richtung verschoben, so wird ein Objekt auf dem Output-Sample leicht grösser. Eine
 Richtung in diesem Raum würde also der Grösse entsprechen \cite[~t 17:35]{youtube:gan}.
@@ -239,7 +238,7 @@ Richtung in diesem Raum würde also der Grösse entsprechen \cite[~t 17:35]{yout
 \section{Vor- und Nachteile}
 Ein grosser Nachteil ist, dass $D$ und $G$ während dem Training synchronisiert werden müssen, $G$ kann also nicht
 häufig trainiert werden ohne auch $D$ zu aktualisieren. Ansonsten könnte das \glqq Helvetica Szenario\grqq{} eintreten,
-wo $G$ sehr viele Samples aus dem Noise-Raum $p_z$ auf dasselbe Sample im originalen Raum $p_x$ abbildet \cite{8253599}.
+wo $G$ sehr viele Samples aus dem Noise-Raum der Verteiltung $p_z$ auf dasselbe Sample im originalen Raum abbildet \cite{8253599}.
 \para
 Vorteile betreffen das Lernen an sich. So muss nur \Gls{Backpropagation} eingesetzt werden, um Gradienten zu finden.
 Es kann auch gut sein, dass statistische Vorteile erzielt werden durch die Tatsache, dass der Generator $G$ nicht direkt
