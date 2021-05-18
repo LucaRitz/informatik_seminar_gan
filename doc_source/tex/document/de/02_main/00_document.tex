@@ -80,10 +80,7 @@ Nachfolgend werden einige Gedanken des Autors dazu aufgeführt.\\
     D(x) = \frac{1}{2}, D(G(z)) = \frac{1}{2} \Rightarrow \log(\frac{1}{2}) + \log(1 - \frac{1}{2}) = \log(\frac{1}{2}) + \log(\frac{1}{2}) = -\log(4) = -1.3862
 \end{align}
 Nach den Autoren bildet der Fall 2 das globale Minimum, welches eben nur erzielt werden kann, wenn der Discriminator nicht mehr zwischen
-den beiden Datensets unterscheiden kann \cite[p.~4-5]{8253599}. Es gilt $p_{data} = p_{g}$. Wichtig hierbei zu erwähnen ist
-die Tatsache, dass der Diskriminator mit dem Generator gekoppelt zu sein scheint. Soll heissen, dass wenn der Diskriminator im Schnitt für
-die Samples aus dem originalen Datenraum den Wert $x$ angibt, er für Samples aus dem generierten Datenraum $1 - x$ als Resultat liefert.
-
+den beiden Datensets unterscheiden kann \cite[p.~4-5]{8253599}. Es gilt $p_{data} = p_{g}$.
 Was genau diese sogenannte Value-Funktion $V(G,D)$ darstellt und wie sie hergeleitet wurde, wird im nächsten Abschnitt
 genauer erläutert.
 \para
@@ -117,17 +114,17 @@ kann für einen binären Klassifizierer wie in Formel \ref{eq:7} geschrieben wer
     H(P,Q) = - \sum_{x \in X} (P(x) \cdot log(Q(x)) + (1 - P(x)) \cdot log(1 - Q(x))) \label{eq:7}
 \end{align}
 Die erste Zeile der \glqq discriminator\textunderscore loss\grqq{} Funktion berechnet die Kreuzentropie zwischen den Wahrscheinlichkeiten der originalen Samples
-sowie der erwarteten Wahrscheinlichkeiten von $D$ für die originalen Samples. Für den Diskriminator entspricht $P(x) = p_{data}(x) = 1$ für alle Wahrscheinlichkeiten,
+sowie der erwarteten Wahrscheinlichkeiten von $D$ für die originalen Samples. Für den Diskriminator entspricht $P(x) = 1$ für alle Wahrscheinlichkeiten,
 wobei $Q(x) = D(x)$ gilt und das Sample $x$ aus dem originalen Datenset stammt. Eingesetzt in Formel \ref{eq:7} ergibt dies \ref{eq:8}.
 \begin{align}
-    H(p_{data},D) = - \sum_{x \sim p_{data}} (p_{data}(x) \cdot log(D(x)) + (1 - p_{data}(x)) \cdot log(1 - D(x))) \label{eq:8}\\
+    H(P,D) = - \sum_{x \sim p_{data}} (P(x) \cdot log(D(x)) + (1 - P(x)) \cdot log(1 - D(x))) \label{eq:8}\\
     H(1,D) = - \sum_{x \sim p_{data}} log(D(x)) \label{eq:11}
 \end{align}
 Die darauffolgende Zeile der Funktion \glqq discriminator\textunderscore loss\grqq{} wird dem zweiten Summand der Gleichung \ref{eq:1} zugewiesen.
-In diesem Fall ist $P(x) = p_{g}(x) = 0$ für alle erwarteten Wahrscheinlichkeiten (das generierte Sample gehört nicht zum
+In diesem Fall ist $P(x) = 0$ für alle erwarteten Wahrscheinlichkeiten (das generierte Sample gehört nicht zum
 originalen Datenset), $Q(x) = D(x)$ und $x$ stammt aus dem generierten Datenset.
 \begin{align}
-    H(p_{g}(x),D) = - \sum_{x \sim p_{g}} (p_{g}(x) \cdot log(D(x)) + (1 - p_{g}(x)) \cdot log(1 - D(x)))\\
+    H(P,D) = - \sum_{x \sim p_{g}} (P(x) \cdot log(D(x)) + (1 - P(x)) \cdot log(1 - D(x)))\\
     H(0,D) = - \sum_{x \sim p_{g}} log(1 - D(x)) \label{eq:9}
 \end{align}
 Wenn nun in Betracht gezogen wird, dass $x$ nicht der Wahrscheinlichkeitsverteilung $p_g$, sondern der Noise-Verteilung $p_z$ folgt und $x = G(z)$ gilt,
