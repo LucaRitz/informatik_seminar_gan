@@ -102,3 +102,54 @@ Durch Ausklammern ergibt sich das arithmetische Mittel.
 \begin{align}
     E(X) = \frac{1}{n} \cdot \sum_{i = 1}^{n} (X_i)
 \end{align}
+
+\section{Minimax}\label{anhang:minimax}
+Um zu verstehen, wieso es sich hierbei um einen solchen Minimax-Algorithmus handelt, wird in diesem Abschnitt ebendieser mit
+Verweis auf die Gleichung \ref{eq:1} eingeführt. Der Algorithmus geht auf den Versuch zurück, für ein Zwei-Spieler-Spiel eine
+schlaue KI zu erschaffen, die möglichst weit in die Zukunft sehen und abschätzen kann, was der Gegener tun wird.
+Dabei geht man davon aus, dass der Gegner immer so agiert, damit er seine Gewinnwahrscheinlichkeit maximiert und die
+der KI minimiert.\cite{towardsdatascience:minimax} Die Züge, welche gemacht werden können, werden über einen sogenannten
+Game-Tree dargestellt. Dieser ist in Abbildung \ref{fig:Berechneter GAN-Game-Tree} ersichtlich,
+es ist der Game-Tree für ein \Gls{GAN} gegeben. Jeder Layer stellt einen Zug in diesem Spiel dar.
+Innerhalb eines Zuges gibt es viele Möglichkeiten. Jede dieser Möglichkeiten wird über einen Node repräsentiert.
+In der Gleichung \ref{eq:1} geht es um die Maximierung für $D$, weswegen die grünen Layer zu $D$ gehören. In diesen Zügen
+soll der Algorithmus die Value-Funktion $V(G,D)$ für einen Node aus seinen Nachfolgern maximal wählen. Hingegen soll $G$ minimiert werden, weswegen
+die roten Layer zu $G$ gehören. Innerhalb dieser Layer wird der minimale Wert der nachfolge States bevorzugt. Ist eine gewisse
+Tiefe erreicht worden, oder es gibt keine Nachfolge-States mehr, dann wird die Value-Funktion $V(G,D)$ für diese States aufgerufen und für den
+jeweiligen Status der Wert berechnet. Abbildung \ref{fig:Berechneter GAN-Game-Tree} zeigt einen möglichen ausgefüllten Game-Tree über drei Stufen hinweg.
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.5\textwidth]{../common/04_appendix/resources/00_gan_game_tree_filled.png}
+    \end{center}
+    \caption{Berechneter GAN-Game-Tree}
+    \label{fig:Berechneter GAN-Game-Tree}
+\end{figure}
+Der rote Pfad bildet nach aktuellem Kentnisstand der beste Weg für $D$, und wird diesen wählen unter der Annahme,
+dass $G$ wiederum den Weg wählen wird, welcher für $G$ am besten ist.
+
+\section{Neuronale Netze - Multilayer Perceptron}\label{anhang:neuronale_netze}
+Da die Architektur des \Gls{GAN} auf zwei neuronalen Netzen beruht, wird in diesem Kapitel kurz darauf eingegangen, wobei
+nicht die Absicht besteht, ein vertieftes Wissen zu vermitteln.
+\para
+Die neuronalen Netze sind, wie so manches, über die Zeit herangereift. Die Intention besteht nicht darin, das menschliche Gehirn
+nachzubauen, sondern eher eine Art Modell für die Informationsverarbeitung zu beschreiben \cite{wiki:knn}. Wie in der Biologie versucht man dies
+in diesen Netzen über Neuronen, wo auch der Name herrührt. Ein solches
+Neuron bekommt als Eingabe eine Summe von gewichteten Werten, welche es durch eine sogenannte \glqq Aktivierungsfunktion\grqq{} in
+einen Ausgabewert umwandelt.
+\para
+Am Anfang dieser Netzwerke stand das Perzeptron, welches nur ein
+einziges künstliches Neuron beinhaltet und von Frank Rosenblatt beschrieben wurde.\cite{wiki:perzeptron} Danach hat man damit
+begonnen, diese Neuronen über Layer miteinander zu verbinden, wobei man den ersten Layer als Input-Layer, die Layer dazwischen
+als Hidden-Layer und den letzten Layer aus Output-Layer kennt. Der Output-Layer beinhaltet in einem einfachen \Gls{KNN} so viele
+Neuronen, wie es Klassen gibt. Jedes dieser Output-Neuronen gibt die Wahrscheinlichkeit an, ob eine Eingabe zu der jeweiligen
+Klasse gehört \cite{wiki:knn}.
+\para
+Ein solches neuronales Netz ist eigentlich eine Optimierungsaufgabe. In dem Fall geht es darum, am Ende eine Fehlerfunktion, welche
+den Abstand des Ist- und Sollzustands beschreibt, zu minimieren. Je geringer der Fehler, desto besser klassifiziert das Netz. Die
+Variablen, welche dabei angepasst werden können, sind die Gewichte, welche jeweils auf einer Verbindung zwischen zwei Neuronen liegen.
+Wie wahrscheinlich jeder aufmerksame Leser erkennt, werden dies sehr schnell sehr viele Variablen, weswegen normale Verfahren wie
+z.B. der Gradientenabstieg zwar eingesetzt werden können, aber sehr ineffizient sind.
+Der Durchbruch dieser Netzwerke wurde daher erst mit der Beschreibung des \Gls{Backpropagation}-Algorithmus erzielt, welcher ein Spezialfall
+des Gradientenabstiegverfahrens darstellt und die Gewichte aufgrund ihres Anteils am Fehler anpasst \cite{wiki:backpropagation}.
+Heute gibt es sehr viele verschieden Arten und Architekturen von künstlichen neuronalen Netzen, auf welche nun nicht weiter eingegangen
+wird.
