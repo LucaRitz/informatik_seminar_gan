@@ -43,6 +43,9 @@ def build_checkpoint(gan) -> tf.train.Checkpoint:
                                      discriminator=gan.discriminator)
 
 
+first_step = True
+
+
 def generate(output_dir: str, gan, checkpoint_dir: str, checkpoint_prefix: str, do_train=False, restore=False):
     checkpoint = build_checkpoint(gan)
     if restore or not do_train:
@@ -52,21 +55,29 @@ def generate(output_dir: str, gan, checkpoint_dir: str, checkpoint_prefix: str, 
         @tf.function
         def train_step(images):
             noise = tf.random.normal([gan.BATCH_SIZE, gan.noise_dim])
+            global first_step
+            for i in range(10 if first_step else 1):
+                with tf.GradientTape() as disc_tape:
+                    generated_images = gan.generator(noise, training=True)
 
-            with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
+                    real_output = gan.discriminator(images, training=True)
+                    fake_output = gan.discriminator(generated_images, training=True)
+
+                    disc_loss = discriminator_loss(real_output, fake_output)
+                gradients_of_discriminator = disc_tape.gradient(disc_loss, gan.discriminator.trainable_variables)
+                gan.discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, gan.discriminator.trainable_variables))
+
+            first_step = False
+            tf.print(disc_loss)
+
+            with tf.GradientTape() as gen_tape:
                 generated_images = gan.generator(noise, training=True)
-
-                real_output = gan.discriminator(images, training=True)
                 fake_output = gan.discriminator(generated_images, training=True)
-
                 gen_loss = generator_loss(fake_output)
-                disc_loss = discriminator_loss(real_output, fake_output)
 
             gradients_of_generator = gen_tape.gradient(gen_loss, gan.generator.trainable_variables)
-            gradients_of_discriminator = disc_tape.gradient(disc_loss, gan.discriminator.trainable_variables)
-
             gan.generator_optimizer.apply_gradients(zip(gradients_of_generator, gan.generator.trainable_variables))
-            gan.discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, gan.discriminator.trainable_variables))
+
 
         def train(dataset, epochs, checkpoint, checkpoint_prefix, output_dir: str):
             for epoch in range(epochs):
